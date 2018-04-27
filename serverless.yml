@@ -1,0 +1,69 @@
+service: serverless-csp
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: ${opt:stage, self:custom.defaultStage}
+  environment:
+    DEFAULT_SRC: "'none'"
+    BASE_URI: "'none'"
+    SCRIPT_SRC: "'self' 'unsafe-eval' 'unsafe-inline 'https://example.com https://somethingelse.com"
+    CONNECT_SRC: ""'self' https://example.com"
+    IMG_SRC: "* data: https://imgur.net/"
+    OBJECT_SRC: "'none'"
+    MEDIA_SRC: "*"
+    FRAME_SRC: "self' https://player.vimeo.com"
+    STYLE_SRC: "* 'unsafe-inline'"
+    FONT_SRC: "* data:"
+    REPORT_URI: "/csp"
+
+resources:
+  Resources:
+    cspLambdaEdgeRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: "cspLambdaEdgeRole-${opt:stage, self:custom.defaultStage}"
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+                  - edgelambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: myPolicyName
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource: arn:aws:logs:${opt:region, self:provider.region}::log-group:/aws/lambda/*:*:*
+
+custom:
+  defaultStage: dev
+
+functions:
+  csp_report:
+    handler: csp.report
+    memorySize: 128
+    timeout: 30
+    events:
+      - http:
+          path: /csp
+          method: post
+          cors: true                 
+  csp:
+    handler: csp.csp # Lambda@Edge
+    memorySize: 128
+    timeout: 1
+    role: cspLambdaEdgeRole
+
+plugins:
+  - serverless-plugin-optimize
+
+package:
+  individually: true

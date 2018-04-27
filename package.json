@@ -1,0 +1,40 @@
+{
+  "name": "serverless-csp",
+  "version": "1.0.0",
+  "description": "Serverless content security policy",
+  "repository": "",
+  "author": "Mark Steele <mark@control-alt-del.org>",
+  "license": "GPL",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.12.0",
+    "aws-sdk-mock": "^1.6.1",
+    "babel-preset-es2015": "^6.24.1",
+    "chai": "^4.0.2",
+    "deep-equal": "^1.0.1",
+    "eslint": "^4.17.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-mocha": "^4.11.0",
+    "eslint-plugin-node": "^6.0.0",
+    "eslint-plugin-promise": "^3.6.0",
+    "jsdoc": "^3.4.3",
+    "jsdoc-to-markdown": "^3.0.0",
+    "mocha": "^3.2.0",
+    "nyc": "^11.2.1",
+    "serverless-plugin-optimize": "^1.0.0-rc.15",
+    "sinon": "^4.4.2"
+  },
+  "scripts": {
+    "test": "IS_TEST=1 mocha",
+    "coverage": "IS_TEST=1 nyc --check-coverage --lines 75 --per-file mocha",
+    "coverage-report": "IS_TEST=1 nyc --check-coverage --report -r html mocha",
+    "lint": "node node_modules/eslint/bin/eslint.js --color ."
+  },
+  "standard": {
+    "env": [
+      "mocha"
+    ]
+  }
+}
